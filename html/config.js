@@ -113,6 +113,10 @@ ColorByAlt = {
 // In miles, nautical miles, or km (depending settings value 'DisplayUnits')
 //SiteCirclesDistances = new Array(100,150,200,250);
 
+// Do you want increments of "50" to be blue, "100" to be black, and the 2nd-to-last
+//  to be orange and last to be red?  Otherwise all Black.
+//SiteCirclesColorized = false;
+
 // Controls page title, righthand pane when nothing is selected
 //PageName = "tar1090";
 

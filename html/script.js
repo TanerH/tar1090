@@ -1240,14 +1240,30 @@ function createSiteCircleFeatures() {
 				width: 1
 			}),
 			text: new ol.style.Text({
-				font: '10px Helvetica Neue, sans-serif',
+				font: '11px Helvetica Neue, sans-serif',
 				fill: new ol.style.Fill({ color: '#000' }),
 				offsetY: -8,
 				text: format_distance_long(distance, DisplayUnits, 0)
-
 			})
 		});
 	};
+	if (SiteCirclesColorized) {
+		var circleStyleColor = function(distance, circleColor) {
+			return new ol.style.Style({
+				fill: null,
+				stroke: new ol.style.Stroke({
+					color: circleColor,
+					width: 2
+				}),
+				text: new ol.style.Text({
+					font: '11px Helvetica Neue, sans-serif',
+					fill: new ol.style.Fill({ color: '#000' }),
+					offsetY: -8,
+					text: format_distance_long(distance, DisplayUnits, 0)
+				})
+			});
+		};
+	}
 
 	var conversionFactor = 1000.0;
 	if (DisplayUnits === "nautical") {
@@ -1256,12 +1272,27 @@ function createSiteCircleFeatures() {
 		conversionFactor = 1609.0;
 	}
 
-	for (var i=0; i < SiteCirclesDistances.length; ++i) {
+	var CircleCount = SiteCirclesDistances.length;
+	for (var i=0; i < CircleCount; ++i) {
 		var distance = SiteCirclesDistances[i] * conversionFactor;
 		var circle = make_geodesic_circle(SitePosition, distance, 180);
 		circle.transform('EPSG:4326', 'EPSG:3857');
 		var feature = new ol.Feature(circle);
-		feature.setStyle(circleStyle(distance));
+		if (SiteCirclesColorized) { 
+			if (CircleCount > 1 && i == (CircleCount - 1)) {
+				feature.setStyle(circleStyleColor(distance, "#EE1111"));
+			} else if (CircleCount > 2 && i == (CircleCount - 2) ) {
+				feature.setStyle(circleStyleColor(distance, "#EE6611"));
+			} else {
+				if (SiteCirclesDistances[i]/100 == parseInt(SiteCirclesDistances[i]/100)) {
+					feature.setStyle(circleStyle(distance));
+				} else {
+					feature.setStyle(circleStyleColor(distance, "#1111EE"));
+				}
+			}
+		} else {
+			feature.setStyle(circleStyle(distance));
+		}
 		StaticFeatures.push(feature);
 		SiteCircleFeatures.push(feature);
 	}

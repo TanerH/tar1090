@@ -134,6 +134,9 @@ var OutlineMlatColor = '#001F66';
 var SiteCircles = true; // true to show circles (only shown if the center marker is shown)
 // In miles, nautical miles, or km (depending settings value 'DisplayUnits')
 var SiteCirclesDistances = new Array(100,150,200);
+// Do you want increments of "50" to be blue, "100" to be black, and the 2nd-to-last
+//  to be orange and last to be red?  Otherwise all Black.
+var SiteCirclesColorized = false;
 
 // Controls page title, righthand pane when nothing is selected
 var PageName = "tar1090";
