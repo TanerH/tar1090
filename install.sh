@@ -2,7 +2,7 @@
 set -e
 
 srcdir=/run/dump1090-fa
-repo="https://github.com/wiedehopf/tar1090"
+repo="https://github.com/tanerh/tar1090"
 ipath=/usr/local/share/tar1090
 lighttpd=no
 nginx=no
