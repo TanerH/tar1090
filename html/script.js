@@ -587,6 +587,10 @@ function init_page() {
 	$('#mapdim_checkbox').on('click', function() {
 		toggleMapDim();
 	});
+	$('#rssistats_checkbox').on('click', function() {
+		toggleRSSIStats(true);
+	});
+	toggleRSSIStats(false);
 
 	// Force map to redraw if sidebar container is resized - use a timer to debounce
 	$("#sidebar_container").on("resize", function() {
@@ -1702,6 +1706,11 @@ function refreshTableInfo() {
 	//console.log([bottomLeft[1], topRight[1]]);
 	//sidebarVisible = $("#sidebar_container").is(":visible");
 
+ 	var rssi_sum = 0;
+ 	var rssi_min = 0;
+ 	var rssi_max = -9999;
+ 	var valid_rssi_count = 0;
+
 	//console.time("updateCells");
 	for (var i = 0; i < PlanesOrdered.length; ++i) {
 		var tableplane = PlanesOrdered[i];
@@ -1795,6 +1804,18 @@ function refreshTableInfo() {
 			updateCell(tableplane, 16, format_data_source(tableplane.getDataSource()));
 			//updateCell(tableplane, 17, tableplane.baseMarkerKey);
 
+			// Let's store min/max/avg RSSI...
+			//   -49 or less is generally "no RSSI", so ignore those
+			var tp_rssi = tableplane.rssi;
+			if (tp_rssi !== null && tp_rssi > -49) {
+				valid_rssi_count++;
+				rssi_sum += tp_rssi;
+				if (tp_rssi < rssi_min) {
+					rssi_min = tp_rssi;
+				} else if (tp_rssi > rssi_max) {
+					rssi_max = tp_rssi;
+				}
+			}
 
 		}
 		if (tableplane.classesCache != classes) {
@@ -1803,6 +1824,9 @@ function refreshTableInfo() {
 		}
 	}
 	//console.timeEnd("updateCells");
+
+	var rssi_avg = (rssi_sum / valid_rssi_count).toFixed(1);
+	$('#rssi_values').text(rssi_max.toFixed(1) + " / " + rssi_avg + " / " + rssi_min.toFixed(1) + "  dBFS");
 
 	if (show_squawk_warning_cache != show_squawk_warning && show_squawk_warning ) {
 		$("#SpecialSquawkWarning").css('display','block');
@@ -2454,6 +2478,24 @@ function toggleMapDim(switchOn) {
 	}
 	OLMap.render();
 	buttonActive('#B', localStorage['MapDim'] == "true");
+}
+
+function toggleRSSIStats(switchToggle) {
+	if (typeof localStorage['RSSIStats'] === 'undefined') {
+		localStorage['RSSIStats'] = 'show';
+	}
+	var showRSSIStats = localStorage['RSSIStats'];
+	if (switchToggle === true) {
+		showRSSIStats = (showRSSIStats === 'show') ? 'hidden' : 'show';
+	}
+	if (showRSSIStats === 'show') {
+		$('#rssistats_checkbox').addClass('settingsCheckboxChecked');
+		$('#rssistats').show();
+	} else {
+		$('#rssistats_checkbox').removeClass('settingsCheckboxChecked');
+		$('#rssistats').hide();
+	}
+	localStorage['RSSIStats'] = showRSSIStats;
 }
 
 function toggleAltitudeChart(switchToggle) {
